@@ -32,16 +32,20 @@ class AlienInvasion:
             # Handle ship movement
             self.ship.update()
 
-            # Handle bullets movement
-            self.bullets.update()
-
-            # Get rid of bullets that have disappeared
-            for bullet in self.bullets.copy():
-                if bullet.rect.bottom <= 0:
-                    self.bullets.remove(bullet)
+            # Handle bullets movement and management
+            self._update_bullets()
 
             # Update screen
             self._update_screen()
+
+    def _update_bullets(self):
+        """Update position of bullets and get rid of old bullets."""
+        # Update bullet positions.
+        self.bullets.update()
+        # Get rid of bullets that have disappeared.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
         
     def _check_events(self):
         """Respond to keypresses and mouse events."""
