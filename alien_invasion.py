@@ -35,6 +35,11 @@ class AlienInvasion:
             # Handle bullets movement
             self.bullets.update()
 
+            # Get rid of bullets that have disappeared
+            for bullet in self.bullets.copy():
+                if bullet.rect.bottom <= 0:
+                    self.bullets.remove(bullet)
+
             # Update screen
             self._update_screen()
         
