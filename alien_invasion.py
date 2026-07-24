@@ -1,3 +1,4 @@
+import random
 import sys
 
 import pygame
@@ -10,6 +11,7 @@ from scoreboard import Scoreboard
 from settings import Settings
 from ship import Ship
 from sound_manager import SoundManager
+from ui_fonts import get_ui_font
 
 
 class AlienInvasion:
@@ -23,6 +25,7 @@ class AlienInvasion:
         )
         pygame.display.set_caption("Alien Invasion")
         self.clock = pygame.time.Clock()
+        self.stars = self._create_starfield()
 
         self.stats = GameStats(self.settings)
         self.ship = Ship(self)
@@ -34,9 +37,11 @@ class AlienInvasion:
         self.scoreboard = Scoreboard(self)
         self.play_button = Button(self, "Play")
 
-        self.title_font = pygame.font.SysFont(None, 82)
-        self.overlay_font = pygame.font.SysFont(None, 54)
-        self.help_font = pygame.font.SysFont(None, 30)
+        self.title_font = get_ui_font(86, bold=True)
+        self.overlay_font = get_ui_font(56, bold=True)
+        self.score_font = get_ui_font(38, bold=True, monospace=True)
+        self.help_font = get_ui_font(24, bold=True)
+        self.eyebrow_font = get_ui_font(17, bold=True)
 
     def run_game(self):
         """Run the main event/update/render loop."""
@@ -196,7 +201,8 @@ class AlienInvasion:
 
         available_y = (
             self.settings.screen_height
-            - 3 * alien_height
+            - self.settings.fleet_top
+            - 2 * alien_height
             - self.ship.rect.height
         )
         rows = max(1, available_y // (2 * alien_height))
@@ -210,56 +216,132 @@ class AlienInvasion:
         alien_width, alien_height = alien.rect.size
         alien.x = float(alien_width + 2 * alien_width * column)
         alien.rect.x = round(alien.x)
-        alien.rect.y = alien_height + 2 * alien_height * row
+        alien.rect.y = self.settings.fleet_top + 2 * alien_height * row
         self.aliens.add(alien)
 
-    def _draw_centered_text(self, text, font, y, color=None):
+    def _create_starfield(self):
+        """Create a stable procedural starfield without external assets."""
+        randomizer = random.Random(1978)
+        stars = []
+        colors = ((76, 115, 160), (106, 159, 205), (194, 226, 255))
+        for _ in range(105):
+            stars.append(
+                (
+                    randomizer.randrange(self.settings.screen_width),
+                    randomizer.randrange(self.settings.screen_height),
+                    randomizer.choice((1, 1, 1, 2)),
+                    randomizer.choice(colors),
+                )
+            )
+        return stars
+
+    def _draw_starfield(self):
+        for x, y, radius, color in self.stars:
+            pygame.draw.circle(self.screen, color, (x, y), radius)
+
+    def _draw_centered_text(
+        self, text, font, y, color=None, *, shadow=False
+    ):
         color = color or self.settings.text_color
         image = font.render(text, True, color)
         rect = image.get_rect(center=(self.screen.get_rect().centerx, y))
+        if shadow:
+            shadow_image = font.render(text, True, (0, 0, 0))
+            self.screen.blit(shadow_image, rect.move(4, 6))
         self.screen.blit(image, rect)
 
     def _draw_overlay(self):
         overlay = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
-        overlay.fill((245, 248, 252, 220))
+        overlay.fill((3, 8, 20, 224))
         self.screen.blit(overlay, (0, 0))
+
+    def _draw_info_panel(self, rect):
+        pygame.draw.rect(
+            self.screen,
+            (*self.settings.panel_color, 235),
+            rect,
+            border_radius=14,
+        )
+        pygame.draw.rect(
+            self.screen,
+            self.settings.panel_border_color,
+            rect,
+            width=2,
+            border_radius=14,
+        )
 
     def _draw_menu(self):
         self._draw_overlay()
         self._draw_centered_text(
-            "ALIEN INVASION", self.title_font, 175, self.settings.accent_color
+            "ALIEN INVASION",
+            self.title_font,
+            185,
+            self.settings.accent_color,
+            shadow=True,
         )
         self._draw_centered_text(
-            "Move: Arrow keys or A/D    Fire: Space",
+            "DEFEND THE LAST ORBIT",
+            self.eyebrow_font,
+            246,
+            self.settings.secondary_color,
+        )
+        controls_panel = pygame.Rect(335, 285, 530, 110)
+        self._draw_info_panel(controls_panel)
+        self._draw_centered_text(
+            "MOVE  LEFT / RIGHT  •  A / D        FIRE  SPACE",
             self.help_font,
-            285,
+            322,
         )
         self._draw_centered_text(
-            "Pause: P/Esc    Mute: M    Quit: Q", self.help_font, 325
+            "PAUSE  P / ESC        MUTE  M        QUIT  Q",
+            self.eyebrow_font,
+            365,
+            self.settings.muted_text_color,
         )
         self.play_button.draw()
 
     def _draw_paused(self):
         self._draw_overlay()
-        self._draw_centered_text("PAUSED", self.overlay_font, 330)
+        panel = pygame.Rect(340, 255, 520, 245)
+        self._draw_info_panel(panel)
+        self._draw_centered_text(
+            "PAUSED",
+            self.overlay_font,
+            325,
+            self.settings.accent_color,
+            shadow=True,
+        )
         mute_text = "Muted" if self.sounds.muted else "Sound on"
         self._draw_centered_text(
-            f"Press P or Esc to continue  •  {mute_text}",
+            f"P / ESC TO CONTINUE    •    {mute_text.upper()}",
             self.help_font,
-            390,
+            405,
+            self.settings.muted_text_color,
         )
 
     def _draw_game_over(self):
         self._draw_overlay()
-        self._draw_centered_text("GAME OVER", self.overlay_font, 235)
+        panel = pygame.Rect(335, 205, 530, 340)
+        self._draw_info_panel(panel)
+        self._draw_centered_text(
+            "GAME OVER",
+            self.overlay_font,
+            275,
+            self.settings.danger_color,
+            shadow=True,
+        )
         final_score = Scoreboard.format_score(self.stats.score)
         self._draw_centered_text(
-            f"Final score: {final_score}", self.help_font, 300
+            "FINAL SCORE", self.eyebrow_font, 335, self.settings.muted_text_color
+        )
+        self._draw_centered_text(
+            final_score, self.score_font, 375, self.settings.accent_color
         )
         self.play_button.draw()
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
+        self._draw_starfield()
         self.aliens.draw(self.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()

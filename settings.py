@@ -5,27 +5,35 @@ class Settings:
         # Display settings.
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (5, 11, 24)
+        self.asset_bg_color = (230, 230, 230)
         self.frame_rate = 60
 
         # Ship settings.
         self.ship_limit = 3
 
         # Bullet settings.
-        self.bullet_width = 3
-        self.bullet_height = 15
-        self.bullet_color = (60, 60, 60)
+        self.bullet_width = 4
+        self.bullet_height = 18
+        self.bullet_color = (70, 225, 255)
         self.bullets_allowed = 3
 
         # Fleet and difficulty settings.
         self.fleet_drop_speed = 20
+        self.fleet_top = 135
         self.speedup_scale = 1.10
         self.score_scale = 1.50
 
         # Interface colors.
-        self.text_color = (25, 35, 55)
-        self.accent_color = (40, 130, 210)
-        self.button_color = (40, 155, 80)
+        self.text_color = (230, 244, 255)
+        self.muted_text_color = (125, 158, 185)
+        self.accent_color = (49, 211, 255)
+        self.secondary_color = (132, 92, 255)
+        self.panel_color = (12, 25, 46)
+        self.panel_border_color = (33, 84, 120)
+        self.button_color = (25, 182, 123)
+        self.button_hover_color = (39, 220, 151)
+        self.danger_color = (255, 83, 112)
 
         self.initialize_dynamic_settings()
 

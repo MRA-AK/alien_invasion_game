@@ -16,7 +16,7 @@ class Ship(Sprite):
         self.image = pygame.image.load(
             str(resource_path("images", "ship.bmp"))
         ).convert()
-        self.image.set_colorkey(self.settings.bg_color)
+        self.image.set_colorkey(self.settings.asset_bg_color)
         self.rect = self.image.get_rect()
         self.x = 0.0
 

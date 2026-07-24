@@ -16,7 +16,7 @@ class Alien(Sprite):
         self.image = pygame.image.load(
             str(resource_path("images", "alien.bmp"))
         ).convert()
-        self.image.set_colorkey(self.settings.bg_color)
+        self.image.set_colorkey(self.settings.asset_bg_color)
         self.rect = self.image.get_rect()
         self.x = float(self.rect.x)
 
