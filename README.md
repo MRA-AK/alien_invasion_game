@@ -1,66 +1,80 @@
-# Alien Invasion
+<div align="center">
+  <h1>👾 Alien Invasion</h1>
+  <p><strong>A small arcade game and my personal playground for learning Pygame.</strong></p>
+  <img src="docs/gameplay.png" alt="Alien Invasion gameplay" width="100%">
+</div>
 
-Alien Invasion is a classic fixed-screen arcade game built with Python and
-Pygame. Clear increasingly fast alien fleets, protect your three ships, and
-chase a high score that lasts until the application closes.
+## About the project
 
-## Requirements and Setup
+Alien Invasion is a classic fixed-screen shooter built with Python and Pygame. I made it as a fun project for experimenting with game loops, sprites, collisions, input handling, sound, UI design, and packaging a Python game as a desktop executable.
 
-Python 3.12 is recommended.
+Move the ship, clear the fleet, and survive as long as possible. Every completed wave increases the level, speeds up the game, and makes each alien worth more points.
 
-```powershell
+### Highlights
+
+- Progressive alien fleets with increasing speed
+- Score, session high score, level, and remaining-life HUD
+- Keyboard and mouse controls
+- Pause, restart, mute, and game-over states
+- Generated arcade sound effects with silent fallback
+- Frame-rate-independent movement and a procedural starfield
+
+## Run locally
+
+Python 3.12 is recommended. Clone the repository and enter the project directory:
+
+```bash
+git clone https://github.com/MRA-AK/alien_invasion_game.git
+cd alien_invasion_game
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-On macOS or Linux, activate with `source .venv/bin/activate` instead.
-
-## Run and Controls
-
-Start the game from the repository root:
+Activate the environment:
 
 ```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
+
+```bash
+# macOS or Linux
+source .venv/bin/activate
+```
+
+Install Pygame and launch:
+
+```bash
+python -m pip install -r requirements.txt
 python alien_invasion.py
 ```
 
-| Action | Controls |
+## Controls
+
+| Action | Key |
 | --- | --- |
-| Move | Left/Right arrows or A/D |
-| Fire | Space |
-| Start/restart | Enter or click the button |
-| Pause/resume | P or Escape |
-| Mute/unmute | M |
-| Quit | Q or close the window |
+| Move | Left/Right arrows or `A` / `D` |
+| Fire | `Space` |
+| Start or restart | `Enter` or click the button |
+| Pause or resume | `P` or `Esc` |
+| Mute or unmute | `M` |
+| Quit | `Q` or close the window |
 
-## Test
+## Development
 
-Tests use Pygame's dummy video and audio drivers and do not open a window:
+Install the development tools and run the test suite:
 
-```powershell
+```bash
+python -m pip install -r requirements-dev.txt
 python -m pytest -q
-python -m compileall alien_invasion.py alien.py bullet.py button.py `
-  game_stats.py resources.py scoreboard.py settings.py ship.py sound_manager.py
 ```
 
-For gameplay changes, also manually check movement boundaries, collisions,
-level transitions, life loss, pause, audio, restart, and quitting.
-
-## Build the Windows Executable
+Build the single-file Windows executable with:
 
 ```powershell
 python -m PyInstaller --clean --noconfirm alien_invasion.spec
-.\dist\AlienInvasion.exe --smoke-test
 .\dist\AlienInvasion.exe
 ```
 
-The versioned spec bundles all files under `images/` and `sounds/` into a
-windowed, single-file executable. Build artifacts stay in ignored `build/` and
-`dist/` directories.
+## License
 
-## Troubleshooting
-
-- Run from the repository root when using the Python entry point.
-- If audio initialization fails, the game continues silently by design.
-- If PowerShell blocks virtual-environment activation, run the environment's
-  Python directly: `.\.venv\Scripts\python.exe alien_invasion.py`.
+This project is available under the [GNU General Public License v3.0](LICENSE).
